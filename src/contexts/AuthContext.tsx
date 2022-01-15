@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import Router from 'next/router';
-import { api } from '../services/api';
+import { api } from '../services/apiClient';
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
 
 type User = {
@@ -63,15 +63,17 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
+      console.log('Chegou no signIn');
+
       const { data } = await api.post('/sessions', { email, password });
       const { roles, permissions, token, refreshToken } = data;
 
-      setCookie(null, 'nextAuth.token', token, {
+      setCookie(undefined, 'nextAuth.token', token, {
         maxAge: 60 * 60 * 24 * 30,
         path: '/',
       });
 
-      setCookie(null, 'nextAuth.refreshToken', refreshToken, {
+      setCookie(undefined, 'nextAuth.refreshToken', refreshToken, {
         maxAge: 60 * 60 * 24 * 30,
         path: '/',
       });
@@ -80,6 +82,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       setUser({ email, roles, permissions });
 
+      console.log('Redireciona para dashboard');
       Router.push('/dashboard');
     } catch (err) {
       console.error(err);
