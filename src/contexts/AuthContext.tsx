@@ -7,7 +7,7 @@ import {
 } from 'react';
 import Router from 'next/router';
 import { api } from '../services/api';
-import { parseCookies, setCookie } from 'nookies';
+import { destroyCookie, parseCookies, setCookie } from 'nookies';
 
 type User = {
   email: string;
@@ -32,6 +32,12 @@ type AuthContextProviderProps = {
 
 const AuthContext = createContext({} as AuthContextData);
 
+export function signOut() {
+  destroyCookie(undefined, 'nextAuth.token');
+  destroyCookie(undefined, 'nextAuth.refreshToken');
+  Router.push('/');
+}
+
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<User>();
   const isAuthenticated = !!user;
@@ -42,11 +48,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const {
-          data: { email, roles, permissions },
-        } = await api.get('/me');
+        try {
+          const {
+            data: { email, roles, permissions },
+          } = await api.get('/me');
 
-        setUser({ email, roles, permissions });
+          setUser({ email, roles, permissions });
+        } catch (_) {
+          signOut();
+        }
       }
     })();
   }, []);
