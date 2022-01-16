@@ -1,14 +1,14 @@
 import { useAuth } from '../contexts/AuthContext';
 
 type UseCanParams = {
-  permissions: string[];
-  roles: string[];
+  permissions?: string[];
+  roles?: string[];
 };
 
 export function useCan({ permissions, roles }: UseCanParams) {
   const { isAuthenticated, user } = useAuth();
 
-  let [hasPermissions, hasRoles] = [false, false];
+  let [hasPermissions, hasRoles] = [true, true];
 
   if (!isAuthenticated) {
     return false;
