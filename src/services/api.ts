@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import { parseCookies, setCookie } from 'nookies';
 import { signOut } from '../contexts/AuthContext';
+import { AuthTokenError } from '../errors/AuthTokenError';
 
 let failedRequestsQueue: any = [];
 let isRefreshing = false;
@@ -63,13 +64,13 @@ export function setupAPIClient(
                 });
               })
               .catch((err) => {
-                console.log(err);
-                failedRequestsQueue.forEach((request: any) => {
-                  request.onFailure(err);
-                });
                 if (process.browser) {
                   signOut();
                 }
+
+                failedRequestsQueue.forEach((request: any) => {
+                  request.onFailure(new AuthTokenError());
+                });
               })
               .finally(() => {
                 failedRequestsQueue = [];

@@ -63,8 +63,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
-      console.log('Chegou no signIn');
-
       const { data } = await api.post('/sessions', { email, password });
       const { roles, permissions, token, refreshToken } = data;
 
@@ -82,7 +80,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       setUser({ email, roles, permissions });
 
-      console.log('Redireciona para dashboard');
       Router.push('/dashboard');
     } catch (err) {
       console.error(err);
