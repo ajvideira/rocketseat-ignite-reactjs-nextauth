@@ -8,12 +8,7 @@ import {
 import Router from 'next/router';
 import { api } from '../services/apiClient';
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
-
-type User = {
-  email: string;
-  permissions: string[];
-  roles: string[];
-};
+import { User } from '../models/user';
 
 type SignInCredentials = {
   email: string;
